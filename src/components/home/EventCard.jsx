@@ -27,11 +27,9 @@ export default function EventCard({ event }) {
     day: 'numeric'
   });
   
-  const memberCount = event.attendees_count || 0;
-  const guestCount  = event.guest_count    || 0;
-  const totalCount  = memberCount + guestCount;
-  const seatsLeft = max_attendees - totalCount;
-  const isSoldOut = seatsLeft <= 0;
+  const totalCount  = event.total_count ?? ((event.attendees_count||0) + (event.guest_count||0));
+  const seatsLeft   = max_attendees - totalCount;
+  const isSoldOut   = seatsLeft <= 0;
 
   const today = new Date();
   const daysLeft = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));

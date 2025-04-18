@@ -26,7 +26,7 @@ export default function EventsCard({ event, index }) {
     day: 'numeric'
   });
   
-  const totalCount = event.total_count ?? (attendees_count + guest_count);
+  const totalCount = event.total_count ?? ((attendees_count||0) + (guest_count||0));
   const seatsLeft = max_attendees - totalCount;
   const isSoldOut = seatsLeft <= 0;
 

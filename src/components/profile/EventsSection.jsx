@@ -2,7 +2,16 @@ import React from 'react';
 import EventCard from './EventCard';
 import { motion } from 'framer-motion';
 
-export default function EventsSection({ title, events, emptyMessage, showEditButton = false }) {
+export default function EventsSection({ 
+  title, 
+  events, 
+  emptyMessage, 
+  showEditButton = false, 
+  hideRegistrationCount = false,
+  showCancelButton = false,
+  onCancelRegistration = () => {},
+  isProcessing = false
+}) {
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -31,6 +40,10 @@ export default function EventsSection({ title, events, emptyMessage, showEditBut
               key={event.event_id} 
               event={event} 
               showEditButton={showEditButton}
+              hideRegistrationCount={hideRegistrationCount}
+              showCancelButton={showCancelButton}
+              onCancelRegistration={onCancelRegistration}
+              isProcessing={isProcessing}
               index={index}
             />
           ))}

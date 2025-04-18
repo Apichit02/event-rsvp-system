@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [organized, setOrganized] = useState([]);
   const [registered, setRegistered] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const u = localStorage.getItem('user');
@@ -57,6 +58,46 @@ export default function ProfilePage() {
       })
       .finally(() => setLoading(false));
   }, [router]);
+
+  const handleCancelRegistration = async (eventId) => {
+    if (!user || isProcessing) return false;
+    
+    setIsProcessing(true);
+    try {
+      const response = await fetch(`/api/registrations/cancel`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventId: eventId,
+          userId: user.id
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setRegistered(prev => prev.filter(event => event.event_id !== eventId));
+        
+        setUser(prev => ({
+          ...prev,
+          registered_count: prev.registered_count - 1
+        }));
+        
+        return true;
+      } else {
+        alert(data.error || 'เกิดข้อผิดพลาดในการยกเลิกการลงทะเบียน');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error canceling registration:', error);
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+      return false;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -118,6 +159,10 @@ export default function ProfilePage() {
               title="กิจกรรมที่คุณลงทะเบียน" 
               events={registered} 
               emptyMessage="คุณยังไม่ได้ลงทะเบียนเข้าร่วมกิจกรรมใดๆ"
+              hideRegistrationCount={true}
+              showCancelButton={true}
+              onCancelRegistration={handleCancelRegistration}
+              isProcessing={isProcessing}
             />
           </motion.div>
           
